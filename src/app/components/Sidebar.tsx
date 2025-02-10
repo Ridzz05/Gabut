@@ -1,46 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useSidebar } from '../context/SidebarContext';
-import { colors } from '../constants/colors';
-
-interface MenuItem {
-  icon: string;
-  label: string;
-  href: string;
-  badge?: string;
-}
-
-const menuItems: MenuItem[] = [
-  {
-    icon: '/icons/home.svg',
-    label: 'Home',
-    href: '/'
-  },
-  {
-    icon: '/icons/tools.svg',
-    label: 'Tools/Utility',
-    href: '/tools',
-    badge: 'New'
-  },
-  {
-    icon: '/icons/playground.svg',
-    label: 'Playground',
-    href: '/playground'
-  },
-  {
-    icon: '/icons/blog.svg',
-    label: 'Blog',
-    href: '/blog'
-  },
-  {
-    icon: '/icons/about.svg',
-    label: 'About',
-    href: '/about'
-  }
-];
+import { SidebarMenuItem } from './sidebar/SidebarMenuItem';
+import { menuItems } from '../constants/menuItems';
 
 export const ArrowIcon = ({ isOpen }: { isOpen: boolean }) => (
   <svg 
@@ -56,20 +19,20 @@ export const ArrowIcon = ({ isOpen }: { isOpen: boolean }) => (
 );
 
 export default function Sidebar() {
-  const pathname = usePathname();
   const { isOpen, setIsOpen } = useSidebar();
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop dengan lazy loading */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm z-40 sm:hidden"
           onClick={() => setIsOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar dengan aria labels untuk aksesibilitas */}
       <aside
         className={`
           fixed top-0 left-0 z-40 h-screen w-64 pt-16
@@ -78,9 +41,10 @@ export default function Sidebar() {
           transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'}
         `}
+        aria-label="Sidebar Navigation"
       >
         <div className="h-full flex flex-col">
-          {/* User Profile Section - Slightly darker background */}
+          {/* Profile Section */}
           <div className="p-6 flex flex-col items-center text-center border-b border-gray-100 dark:border-gray-800/50 bg-white/50 dark:bg-gray-800/50">
             <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden mb-4">
               <Image
@@ -89,6 +53,7 @@ export default function Sidebar() {
                 width={80}
                 height={80}
                 className="object-cover"
+                priority
               />
             </div>
             <h3 className="font-raleway font-semibold text-gray-800 dark:text-white mb-1">
@@ -99,53 +64,21 @@ export default function Sidebar() {
             </p>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 px-4 mt-6">
+          {/* Navigation dengan komponen terpisah */}
+          <nav className="flex-1 px-4 mt-6" aria-label="Main Navigation">
             <div className="space-y-1">
               {menuItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`
-                    relative flex items-center gap-3 px-4 py-3 rounded-lg
-                    font-rubik text-sm transition-colors group
-                    ${pathname === item.href
-                      ? `bg-[${colors.primary.light}] text-white dark:bg-[${colors.primary.dark}]`
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                    }
-                  `}
-                >
-                  <div className="w-5 h-5 relative flex items-center justify-center">
-                    <Image
-                      src={item.icon}
-                      alt={`${item.label} icon`}
-                      width={20}
-                      height={20}
-                      className={`transition-colors ${
-                        pathname === item.href ? 'invert' : 'dark:invert'
-                      }`}
-                    />
-                  </div>
-                  <span className="flex-1">{item.label}</span>
-                  {item.badge && (
-                    <span className={`
-                      px-2 py-0.5 text-xs rounded-full
-                      ${pathname === item.href
-                        ? 'bg-white/20 text-white'
-                        : 'bg-[#442781]/10 dark:bg-[#442781]/20 text-[#442781] dark:text-[#a992db]'
-                      }
-                    `}>
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
+                <SidebarMenuItem key={item.label} {...item} />
               ))}
             </div>
           </nav>
 
-          {/* Storage Info - Slightly darker background */}
+          {/* Storage Section dengan aria-label */}
           <div className="p-4">
-            <div className="p-4 rounded-lg bg-white/50 dark:bg-gray-800/50">
+            <div 
+              className="p-4 rounded-lg bg-white/50 dark:bg-gray-800/50"
+              aria-label="Storage Information"
+            >
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-raleway text-sm font-medium text-gray-800 dark:text-white">
                   Storage
@@ -158,6 +91,10 @@ export default function Sidebar() {
                 <div 
                   className="h-full bg-[#442781] dark:bg-[#61459C] rounded-full"
                   style={{ width: '75%' }}
+                  role="progressbar"
+                  aria-valuenow={75}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
                 />
               </div>
               <p className="font-rubik text-xs text-gray-500 dark:text-gray-400 mt-2">
