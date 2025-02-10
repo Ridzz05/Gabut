@@ -60,7 +60,7 @@ export function Breadcrumb() {
             href="/"
             className="text-gray-500 hover:text-[#442781] dark:text-gray-400 dark:hover:text-[#61459C] transition-colors flex items-center"
           >
-            <Icon type="home" className="w-4 h-4 mr-1" />
+            <Icon type="arrow-left" className="w-4 h-4 mr-1" />
             <span>Beranda</span>
           </Link>
         </li>

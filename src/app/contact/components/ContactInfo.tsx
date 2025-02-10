@@ -3,29 +3,42 @@
 import { motion } from 'framer-motion';
 import Card from '../../components/Card';
 import Icon from '../../components/Icon';
+import type { IconType } from '../../components/Icon';
 
-const contactInfo = [
+interface ContactInfo {
+  title: string;
+  description: string;
+  icon: IconType;
+  link?: {
+    text: string;
+    url: string;
+  };
+}
+
+const contactInfo: ContactInfo[] = [
   {
-    icon: "map",
-    title: "Alamat",
-    content: "Jl. Kayuara No. 123, Jakarta Selatan, Indonesia"
+    title: 'Email',
+    description: 'Kirim email kepada kami',
+    icon: 'external',
+    link: {
+      text: 'hello@example.com',
+      url: 'mailto:hello@example.com'
+    }
   },
   {
-    icon: "mail",
-    title: "Email",
-    content: "hello@kayuara.tech"
+    title: 'GitHub',
+    description: 'Lihat proyek kami di GitHub',
+    icon: 'external',
+    link: {
+      text: 'github.com/yourusername',
+      url: 'https://github.com/yourusername'
+    }
   },
   {
-    icon: "phone",
-    title: "Telepon",
-    content: "+62 812 3456 7890"
+    title: 'Lokasi',
+    description: 'Indonesia',
+    icon: 'external'
   }
-];
-
-const socialMedia = [
-  { icon: "github", label: "GitHub", link: "https://github.com/kayuara" },
-  { icon: "twitter", label: "Twitter", link: "https://twitter.com/kayuara" },
-  { icon: "linkedin", label: "LinkedIn", link: "https://linkedin.com/company/kayuara" }
 ];
 
 const containerVariants = {
@@ -33,20 +46,18 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.4
+      staggerChildren: 0.1
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, x: 20 },
+  hidden: { opacity: 0, x: -20 },
   visible: {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.5,
-      ease: "easeOut"
+      duration: 0.5
     }
   }
 };
@@ -57,48 +68,37 @@ export function ContactInfo() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      className="space-y-4"
     >
-      <Card>
-        {contactInfo.map((info) => (
-          <motion.div
-            key={info.title}
-            variants={itemVariants}
-            className="flex items-start gap-4 mb-8 last:mb-0"
-          >
-            <div className="p-3 rounded-lg bg-[#442781]/5 dark:bg-[#442781]/10">
-              <Icon type={info.icon} className="w-6 h-6 text-[#442781] dark:text-[#61459C]" />
+      {contactInfo.map((info) => (
+        <motion.div key={info.title} variants={itemVariants}>
+          <Card>
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-[#442781]/5 dark:bg-[#442781]/10">
+                <Icon type={info.icon} className="w-6 h-6 text-[#442781] dark:text-[#61459C]" />
+              </div>
+              <div>
+                <h3 className="font-raleway font-bold text-lg text-gray-800 dark:text-white mb-1">
+                  {info.title}
+                </h3>
+                <p className="font-rubik text-gray-600 dark:text-gray-300 mb-2">
+                  {info.description}
+                </p>
+                {info.link && (
+                  <a
+                    href={info.link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-rubik text-[#442781] dark:text-[#61459C] hover:underline"
+                  >
+                    {info.link.text}
+                  </a>
+                )}
+              </div>
             </div>
-            <div>
-              <h3 className="font-raleway font-bold text-lg text-gray-800 dark:text-white mb-1">
-                {info.title}
-              </h3>
-              <p className="font-rubik text-gray-600 dark:text-gray-300">
-                {info.content}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-
-        <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8">
-          <h3 className="font-raleway font-bold text-lg text-gray-800 dark:text-white mb-4">
-            Ikuti Kami
-          </h3>
-          <div className="flex gap-4">
-            {socialMedia.map((social) => (
-              <motion.a
-                key={social.label}
-                href={social.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                variants={itemVariants}
-                className="p-3 rounded-lg bg-[#442781]/5 dark:bg-[#442781]/10 hover:bg-[#442781]/10 dark:hover:bg-[#442781]/20 transition-colors"
-              >
-                <Icon type={social.icon} className="w-6 h-6 text-[#442781] dark:text-[#61459C]" />
-              </motion.a>
-            ))}
-          </div>
-        </div>
-      </Card>
+          </Card>
+        </motion.div>
+      ))}
     </motion.div>
   );
 } 

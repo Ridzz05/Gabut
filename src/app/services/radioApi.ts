@@ -1,12 +1,32 @@
 const BASE_URL = '/api/radio';
 
 // Cache untuk menyimpan data
-let stationsCache: RadioStation[] | null = null;
-let citiesCache: City[] | null = null;
+let stationsCache: RadioStation[] = [];
+let citiesCache: City[] = [];
 let lastFetch = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 menit
 
 export interface RadioStation {
+  radioId: string;
+  name: string;
+  frequency: string;
+  location: string;
+  logo: string;
+  streamUrl: string;
+  description: string;
+  category: string;
+  genres: string[];
+  currentTrack: string | null;
+  listeners: string | null;
+  like: string | null;
+}
+
+export interface City {
+  name: string;
+  url: string;
+}
+
+interface RadioStationResponse {
   radioId: string;
   logo: string;
   name: string;
@@ -15,11 +35,6 @@ export interface RadioStation {
   listeners: string | null;
   like: string | null;
   streamUrl: string;
-}
-
-export interface City {
-  name: string;
-  url: string;
 }
 
 const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 3) => {
@@ -58,14 +73,14 @@ export const radioApi = {
   getAllStations: async (forceRefresh = false): Promise<RadioStation[]> => {
     try {
       const now = Date.now();
-      if (!forceRefresh && stationsCache && (now - lastFetch < CACHE_DURATION)) {
+      if (!forceRefresh && stationsCache.length > 0 && (now - lastFetch < CACHE_DURATION)) {
         return stationsCache;
       }
 
       const response = await fetchWithRetry(BASE_URL);
       const data = await response.json();
       
-      stationsCache = data.map((station: any) => ({
+      stationsCache = data.map((station: RadioStationResponse) => ({
         radioId: station.radioId || '',
         logo: station.logo || '',
         name: station.name || 'Unknown Station',
@@ -80,8 +95,7 @@ export const radioApi = {
       return stationsCache;
     } catch (error) {
       console.error('Error fetching stations:', error);
-      if (stationsCache) return stationsCache;
-      throw new Error('Failed to fetch stations');
+      return stationsCache;
     }
   },
 
@@ -89,7 +103,7 @@ export const radioApi = {
   getCities: async (forceRefresh = false): Promise<City[]> => {
     try {
       const now = Date.now();
-      if (!forceRefresh && citiesCache && (now - lastFetch < CACHE_DURATION)) {
+      if (!forceRefresh && citiesCache.length > 0 && (now - lastFetch < CACHE_DURATION)) {
         return citiesCache;
       }
 
@@ -98,8 +112,7 @@ export const radioApi = {
       return citiesCache;
     } catch (error) {
       console.error('Error fetching cities:', error);
-      if (citiesCache) return citiesCache;
-      throw new Error('Failed to fetch cities');
+      return citiesCache;
     }
   },
 
@@ -117,7 +130,7 @@ export const radioApi = {
       const response = await fetchWithRetry(`${BASE_URL}/city/${formattedCity}`);
       const data = await response.json();
       
-      return data.map((station: any) => ({
+      return data.map((station: RadioStationResponse) => ({
         radioId: station.radioId || '',
         logo: station.logo || '',
         name: station.name || 'Unknown Station',
@@ -142,7 +155,7 @@ export const radioApi = {
       const response = await fetchWithRetry(`${BASE_URL}/search/${encodedQuery}`);
       const data = await response.json();
       
-      return data.map((station: any) => ({
+      return data.map((station: RadioStationResponse) => ({
         radioId: station.radioId || '',
         logo: station.logo || '',
         name: station.name || 'Unknown Station',

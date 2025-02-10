@@ -20,10 +20,10 @@ export function ContactSection() {
         
         <div className="relative">
           <h2 className="font-raleway font-bold text-3xl text-gray-800 dark:text-white mb-4">
-            Let's Work Together
+            Let&apos;s Work Together
           </h2>
           <p className="font-rubik text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Have questions or want to collaborate? We'd love to hear from you! Join our community and be part of something amazing.
+            Have questions or want to collaborate? We&apos;d love to hear from you! Join our community and be part of something amazing.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button
@@ -39,7 +39,7 @@ export function ContactSection() {
               size="lg"
               href="https://github.com/yourusername"
               external
-              icon={<Icon type="github" />}
+              icon={<Icon type="external" />}
             >
               GitHub
             </Button>

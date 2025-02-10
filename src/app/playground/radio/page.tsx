@@ -4,45 +4,39 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRadioPlayer } from '../../hooks/useRadioPlayer';
+import type { RadioStation } from '../../services/radioApi';
 import MediaPlayer from '../../components/MediaPlayer';
 
-const radioStations = [
+const radioStations: RadioStation[] = [
   {
-    name: 'Prambors FM',
-    frequency: '102.2 FM',
+    radioId: '1',
+    name: 'Radio Example 1',
+    frequency: '98.7 FM',
     location: 'Jakarta',
-    logo: '/images/radio/prambors.png',
-    streamUrl: 'https://stream.radiojar.com/4ywdgup3bnzuv',
-    description: 'Radio anak muda Indonesia',
-    category: 'Pop'
+    logo: 'https://via.placeholder.com/100',
+    streamUrl: 'https://example.com/stream1',
+    description: 'Jakarta\'s #1 Hit Music Station',
+    category: 'Pop',
+    genres: ['Pop', 'Top 40'],
+    currentTrack: null,
+    listeners: null,
+    like: null
   },
   {
-    name: 'I-Radio',
-    frequency: '89.6 FM',
-    location: 'Jakarta',
-    logo: '/images/radio/iradio.png',
-    streamUrl: 'https://stream.radiojar.com/4ywdgup3bnzuv',
-    description: '100% musik Indonesia',
-    category: 'Pop'
-  },
-  {
-    name: 'Hard Rock FM',
-    frequency: '87.6 FM',
-    location: 'Jakarta',
-    logo: '/images/radio/hardrock.png',
-    streamUrl: 'https://stream.radiojar.com/4ywdgup3bnzuv',
-    description: 'Radio musik rock Indonesia',
-    category: 'Rock'
-  },
-  {
-    name: 'Ardan Radio',
-    frequency: '105.9 FM',
+    radioId: '2',
+    name: 'Radio Example 2',
+    frequency: '101.3 FM',
     location: 'Bandung',
-    logo: '/images/radio/ardan.png',
-    streamUrl: 'https://stream.radiojar.com/4ywdgup3bnzuv',
-    description: 'Radio hits Bandung',
-    category: 'Pop'
+    logo: 'https://via.placeholder.com/100',
+    streamUrl: 'https://example.com/stream2',
+    description: 'Best Jazz in Town',
+    category: 'Jazz',
+    genres: ['Jazz', 'Blues'],
+    currentTrack: null,
+    listeners: null,
+    like: null
   }
+  // ... tambahkan radio station lainnya
 ];
 
 const categories = ['Semua', 'Pop', 'Rock', 'Jazz', 'Dangdut'];
@@ -123,12 +117,12 @@ export default function RadioPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredStations.map((station) => (
             <button
-              key={station.name}
+              key={station.radioId}
               onClick={() => handleStationChange(station)}
               className={`p-4 rounded-xl border transition-all ${
-                currentStation?.name === station.name
+                currentStation?.radioId === station.radioId
                   ? 'border-[#442781] dark:border-[#61459C] bg-[#442781]/5 dark:bg-[#61459C]/5'
-                  : 'border-gray-100 dark:border-gray-700 hover:border-[#442781] dark:hover:border-[#61459C]'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-[#442781] dark:hover:border-[#61459C]'
               }`}
             >
               <div className="flex items-center gap-4">

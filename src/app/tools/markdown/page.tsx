@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import ToolPageTemplate from '../../components/ToolPageTemplate';
-import Button from '../../components/Button';
-import Icon from '../../components/Icon';
 import ReactMarkdown from 'react-markdown';
 
 export default function MarkdownEditorPage() {

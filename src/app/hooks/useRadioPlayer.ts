@@ -23,7 +23,7 @@ export const useRadioPlayer = () => {
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [volume]);
 
   // Handle volume changes
   useEffect(() => {

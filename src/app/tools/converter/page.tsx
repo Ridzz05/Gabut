@@ -14,6 +14,11 @@ interface ConversionOption {
 
 const formatOptions: FormatType[] = ['json', 'yaml', 'xml', 'csv', 'base64'];
 
+// Tambahkan tipe untuk convertToYaml
+interface YamlObject {
+  [key: string]: YamlObject | string | number | boolean | null;
+}
+
 export default function FormatConverterPage() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
@@ -63,7 +68,7 @@ export default function FormatConverterPage() {
     }
   };
 
-  const convertToYaml = (obj: any, indent: number = 0): string => {
+  const convertToYaml = (obj: YamlObject, indent: number = 0): string => {
     const spaces = ' '.repeat(indent);
     return Object.entries(obj)
       .map(([key, value]) => {

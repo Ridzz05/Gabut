@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react';
+
 interface HeadingProps {
   level?: 1 | 2 | 3;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
@@ -13,7 +15,9 @@ export default function Heading({ level = 1, children, className = '' }: Heading
     3: 'text-2xl md:text-3xl'
   };
 
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  // Gunakan tipe HTML element langsung
+  type HeadingTag = 'h1' | 'h2' | 'h3';
+  const Tag = `h${level}` as HeadingTag;
 
   return (
     <Tag className={`${baseStyles} ${sizes[level]} ${className}`}>

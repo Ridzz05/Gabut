@@ -1,17 +1,22 @@
 // Buat cache untuk menyimpan status gambar yang gagal
 const failedImageCache = new Set<string>();
 
-// Fungsi debounce
-const debounce = <T extends (...args: any[]) => any>(
-  func: T,
+// Definisikan tipe yang lebih spesifik untuk fungsi debounce
+type DebouncedImageErrorHandler = (url: string, imgElement: HTMLImageElement) => void;
+
+// Definisikan tipe untuk parameter fungsi
+type DebouncedFunction = (...args: [string, HTMLImageElement]) => void;
+
+function debounce(
+  func: DebouncedFunction,
   wait: number
-): ((...args: Parameters<T>) => void) => {
+): DebouncedFunction {
   let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
+  return (...args: [string, HTMLImageElement]) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
-};
+}
 
 export const getValidImageUrl = (url: string | undefined): string => {
   // Jika URL sudah ada di cache failed images, langsung return default
@@ -31,7 +36,7 @@ export const getValidImageUrl = (url: string | undefined): string => {
 };
 
 // Fungsi untuk menangani error gambar dengan debounce
-export const handleImageError = debounce((url: string, imgElement: HTMLImageElement) => {
+export const handleImageError: DebouncedImageErrorHandler = debounce((url: string, imgElement: HTMLImageElement) => {
   // Tambahkan URL yang gagal ke cache
   failedImageCache.add(url);
   imgElement.src = '/images/placeholder.jpg';

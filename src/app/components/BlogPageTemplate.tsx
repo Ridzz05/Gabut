@@ -1,5 +1,4 @@
 import PageTemplate from './PageTemplate';
-import Card from './Card';
 import Heading from './Heading';
 import Icon from './Icon';
 import Link from 'next/link';

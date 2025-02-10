@@ -1,109 +1,63 @@
 import { notFound } from 'next/navigation';
 import BlogPageTemplate from '../../components/BlogPageTemplate';
-import Card from '../../components/Card';
-import Button from '../../components/Button';
-import Icon from '../../components/Icon';
-import Image from 'next/image';
+import { BlogContent } from './components/BlogContent';
+import type { BlogPost } from './types';
 
-// Contoh data blog post
-const blogPost = {
-  title: "Getting Started with Next.js 14",
-  date: "March 15, 2024",
-  author: {
-    name: "John Doe",
-    avatar: "/images/authors/john-doe.jpg"
-  },
-  category: "Development",
-  content: `
-    ## Introduction
+// Fungsi untuk fetch data blog post
+async function getBlogPost(slug: string): Promise<BlogPost | null> {
+  try {
+    await new Promise(resolve => setTimeout(resolve, 100));
 
-    Next.js 14 introduces several new features that make it even more powerful for building modern web applications.
+    if (!slug) throw new Error("Slug tidak ditemukan");
 
-    ### Server Components
+    const post: BlogPost = {
+      slug,
+      title: `Getting Started with Next.js 14 - ${slug}`,
+      date: "March 15, 2024",
+      author: {
+        name: "John Doe",
+        avatar: "https://via.placeholder.com/40",
+      },
+      category: "Development",
+      content: `
+        ## Introduction
+        Next.js 14 introduces several new features...
+        
+        This is article with slug: ${slug}
+      `,
+      image: "https://via.placeholder.com/1200x630",
+    };
 
-    Server Components are a new paradigm...
+    return post;
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return null;
+  }
+}
 
-    ### Streaming
+export function generateStaticParams() {
+  return [
+    { slug: 'getting-started' },
+    { slug: 'advanced-features' },
+    { slug: 'deployment' },
+  ];
+}
 
-    Streaming allows you to...
+export const dynamic = "force-dynamic";
 
-    ## Getting Started
+// Hapus parameter dan gunakan context
+export default async function BlogPostPage() {
+  // Ambil slug dari context
+  const slug = window.location.pathname.split('/').pop() || '';
+  const post = await getBlogPost(slug);
 
-    First, create a new Next.js project:
-
-    \`\`\`bash
-    npx create-next-app@latest my-app
-    \`\`\`
-
-    ### Configuration
-
-    Update your next.config.js...
-  `,
-  image: "/images/blog/nextjs.jpg"
-};
-
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  // In a real app, fetch the blog post data based on the slug
-  if (!blogPost) {
-    notFound();
+  if (!post) {
+    return notFound();
   }
 
   return (
-    <BlogPageTemplate
-      title={blogPost.title}
-      showBackButton
-    >
-      <article className="max-w-4xl mx-auto">
-        {/* Hero Image */}
-        <div className="relative aspect-video mb-8">
-          <Image
-            src={blogPost.image}
-            alt={blogPost.title}
-            fill
-            className="object-cover rounded-lg"
-          />
-        </div>
-
-        {/* Meta Info */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Image
-              src={blogPost.author.avatar}
-              alt={blogPost.author.name}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <div>
-              <p className="font-rubik text-gray-800 dark:text-white">
-                {blogPost.author.name}
-              </p>
-              <p className="text-sm font-rubik text-gray-500 dark:text-gray-400">
-                {blogPost.date}
-              </p>
-            </div>
-          </div>
-          <span className="px-3 py-1 bg-[#442781]/10 dark:bg-[#442781]/20 text-[#442781] dark:text-[#a992db] rounded-full text-sm font-rubik">
-            {blogPost.category}
-          </span>
-        </div>
-
-        {/* Content */}
-        <div className="prose dark:prose-invert max-w-none">
-          <ReactMarkdown>{blogPost.content}</ReactMarkdown>
-        </div>
-
-        {/* Share Buttons */}
-        <div className="flex items-center justify-center gap-4 mt-12">
-          <Button
-            variant="secondary"
-            icon={<Icon type="external" />}
-            onClick={() => navigator.share({ title: blogPost.title, url: window.location.href })}
-          >
-            Share Article
-          </Button>
-        </div>
-      </article>
+    <BlogPageTemplate title={post.title} showBackButton>
+      <BlogContent post={post} />
     </BlogPageTemplate>
   );
-} 
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ToolPageTemplate from '../../components/ToolPageTemplate';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
@@ -12,6 +12,7 @@ interface Match {
 }
 
 interface RegexFlags {
+  [key: string]: boolean;
   global: boolean;
   multiline: boolean;
   caseInsensitive: boolean;
@@ -36,24 +37,7 @@ export default function RegexTesterPage() {
   const [replacementText, setReplacementText] = useState('');
   const [replacementResult, setReplacementResult] = useState('');
 
-  const getFlags = () => {
-    return Object.entries(flags)
-      .filter(([_, value]) => value)
-      .map(([key]) => {
-        switch (key) {
-          case 'global': return 'g';
-          case 'multiline': return 'm';
-          case 'caseInsensitive': return 'i';
-          case 'unicode': return 'u';
-          case 'sticky': return 'y';
-          case 'dotAll': return 's';
-          default: return '';
-        }
-      })
-      .join('');
-  };
-
-  const handleTest = () => {
+  const handleTest = useCallback(() => {
     try {
       setError(null);
       if (!pattern) {
@@ -62,11 +46,29 @@ export default function RegexTesterPage() {
         return;
       }
 
-      const regex = new RegExp(pattern, getFlags());
+      const getFlags = () => {
+        return Object.entries(flags)
+          .filter(([, value]) => value)
+          .map(([key]) => {
+            switch (key) {
+              case 'global': return 'g';
+              case 'multiline': return 'm';
+              case 'caseInsensitive': return 'i';
+              case 'unicode': return 'u';
+              case 'sticky': return 'y';
+              case 'dotAll': return 's';
+              default: return '';
+            }
+          })
+          .join('');
+      };
+
+      const currentFlags = getFlags();
+      const regex = new RegExp(pattern, currentFlags);
       const matches: Match[] = [];
       let match;
 
-      if (flags.global) {
+      if (currentFlags.includes('g')) {
         while ((match = regex.exec(testString)) !== null) {
           matches.push({
             text: match[0],
@@ -97,11 +99,11 @@ export default function RegexTesterPage() {
       setMatches([]);
       setReplacementResult('');
     }
-  };
+  }, [pattern, testString, replacementText, flags]);
 
   useEffect(() => {
     handleTest();
-  }, [pattern, testString, flags, replacementText]);
+  }, [handleTest]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

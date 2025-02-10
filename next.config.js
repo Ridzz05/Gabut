@@ -11,7 +11,16 @@ const nextConfig = {
         destination: 'https://api.i-as.dev/api/radio/:path*'
       }
     ];
-  }
+  },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+  typescript: {
+    // Tambahkan ini untuk melihat error TypeScript lebih detail
+    ignoreBuildErrors: false,
+  },
 };
 
 module.exports = nextConfig; 
