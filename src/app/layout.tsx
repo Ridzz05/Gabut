@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
 import { SidebarProvider } from "./context/SidebarContext";
+import { ThemeProvider } from './context/ThemeContext';
 
 const nunitoSans = Nunito_Sans({
   subsets: ['latin'],
@@ -32,18 +33,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${nunitoSans.variable} ${raleway.variable} ${rubik.variable} font-sans antialiased`}>
-        <SidebarProvider>
-          <Navbar />
-          <div className="flex">
-            <Sidebar />
-            <main className="flex-1 sm:ml-64 pt-16 min-h-screen">
-              {children}
-            </main>
-          </div>
-          <Footer />
-        </SidebarProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`
+        ${nunitoSans.variable} ${raleway.variable} ${rubik.variable} 
+        font-sans antialiased 
+        bg-white dark:bg-gray-900 
+        text-gray-800 dark:text-white
+      `}>
+        <ThemeProvider>
+          <SidebarProvider>
+            <Navbar />
+            <div className="flex">
+              <Sidebar />
+              <main className="flex-1 sm:ml-64 pt-16 min-h-screen">
+                {children}
+              </main>
+            </div>
+            <Footer />
+          </SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,118 +1,89 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import ToolPageTemplate from '../../components/ToolPageTemplate';
+import Button from '../../components/Button';
+import Icon from '../../components/Icon';
 
-const defaultJson = `{
-  "name": "John Doe",
-  "age": 30,
-  "email": "john@example.com",
-  "address": {
-    "street": "123 Main St",
-    "city": "New York",
-    "country": "USA"
-  },
-  "hobbies": ["reading", "gaming", "coding"]
-}`;
+export default function JSONValidatorPage() {
+  const [jsonInput, setJsonInput] = useState('');
+  const [result, setResult] = useState<{ valid: boolean; formatted?: string; error?: string }>({ valid: true });
 
-export default function JsonValidator() {
-  const [jsonInput, setJsonInput] = useState(defaultJson);
-  const [error, setError] = useState('');
-  const [formatted, setFormatted] = useState('');
-
-  const validateAndFormat = () => {
+  const validateJSON = () => {
     try {
       const parsed = JSON.parse(jsonInput);
-      setFormatted(JSON.stringify(parsed, null, 2));
-      setError('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      setFormatted('');
+      setResult({
+        valid: true,
+        formatted: JSON.stringify(parsed, null, 2)
+      });
+    } catch (error) {
+      setResult({
+        valid: false,
+        error: (error as Error).message
+      });
     }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(formatted || jsonInput);
-  };
-
   return (
-    <div className="min-h-screen p-8 pb-20 sm:p-20">
-      <main className="max-w-7xl mx-auto">
-        {/* Back Button */}
-        <Link
-          href="/tools"
-          className="inline-flex items-center text-[#442781] hover:text-[#61459C] mb-8 group"
-        >
-          <svg
-            className="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+    <ToolPageTemplate
+      title="JSON Validator"
+      description="Validate and format your JSON data with our powerful JSON validator tool"
+    >
+      <div className="space-y-6">
+        {/* Input Section */}
+        <div>
+          <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300 mb-2">
+            Enter JSON:
+          </label>
+          <textarea
+            value={jsonInput}
+            onChange={(e) => setJsonInput(e.target.value)}
+            className="w-full h-64 p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent"
+            placeholder="Paste your JSON here..."
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-4">
+          <Button
+            variant="primary"
+            onClick={validateJSON}
+            icon={<Icon type="play" />}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          <span className="font-rubik">Back to Tools</span>
-        </Link>
-
-        <div className="mb-8">
-          <h1 className="font-raleway font-bold text-3xl text-gray-800 mb-4">
-            JSON Validator
-          </h1>
-          <p className="font-rubik text-gray-600">
-            Validate and format JSON data.
-          </p>
+            Validate & Format
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setJsonInput('')}
+          >
+            Clear
+          </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-raleway font-semibold text-lg">Input JSON</h2>
-              <button
-                onClick={validateAndFormat}
-                className="px-4 py-2 bg-[#442781] text-white rounded-lg font-rubik text-sm hover:bg-[#61459C] transition-colors"
-              >
-                Validate & Format
-              </button>
-            </div>
-            <textarea
-              value={jsonInput}
-              onChange={(e) => setJsonInput(e.target.value)}
-              className="w-full h-[500px] p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#442781] font-mono text-sm resize-none"
-              placeholder="Paste your JSON here..."
-            />
+        {/* Result Section */}
+        {(result.formatted || result.error) && (
+          <div className={`mt-6 p-4 rounded-lg ${
+            result.valid 
+              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+              : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+          }`}>
+            <h3 className={`font-raleway font-semibold mb-2 ${
+              result.valid
+                ? 'text-green-800 dark:text-green-400'
+                : 'text-red-800 dark:text-red-400'
+            }`}>
+              {result.valid ? 'Valid JSON' : 'Invalid JSON'}
+            </h3>
+            <pre className={`font-mono text-sm whitespace-pre-wrap ${
+              result.valid
+                ? 'text-green-700 dark:text-green-300'
+                : 'text-red-700 dark:text-red-300'
+            }`}>
+              {result.formatted || result.error}
+            </pre>
           </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-raleway font-semibold text-lg">Result</h2>
-              <button
-                onClick={handleCopy}
-                className="px-4 py-2 border border-[#442781] text-[#442781] rounded-lg font-rubik text-sm hover:bg-[#442781] hover:text-white transition-colors"
-              >
-                Copy
-              </button>
-            </div>
-            {error ? (
-              <div className="p-4 bg-red-50 text-red-700 rounded-lg font-mono text-sm">
-                {error}
-              </div>
-            ) : formatted ? (
-              <pre className="p-4 bg-gray-50 rounded-lg overflow-x-auto font-mono text-sm h-[500px]">
-                {formatted}
-              </pre>
-            ) : (
-              <div className="p-4 bg-gray-50 rounded-lg text-gray-500 font-rubik text-sm">
-                Click "Validate & Format" to see the result
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
-    </div>
+        )}
+      </div>
+    </ToolPageTemplate>
   );
 } 

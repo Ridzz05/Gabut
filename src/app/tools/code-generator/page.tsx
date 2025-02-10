@@ -1,133 +1,82 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import ToolPageTemplate from '../../components/ToolPageTemplate';
+import Button from '../../components/Button';
+import Icon from '../../components/Icon';
 
-const languages = ['JavaScript', 'TypeScript', 'Python', 'React Component'];
 const templates = {
-  JavaScript: `// JavaScript Function Template
-function functionName(params) {
-  // Your code here
-  return;
-}`,
-  TypeScript: `// TypeScript Function Template
-interface Params {
-  // Define your params here
-}
+  react: `import React from 'react';
 
-function functionName(params: Params): ReturnType {
-  // Your code here
-  return;
-}`,
-  Python: `# Python Function Template
-def function_name(params):
-    # Your code here
-    return`,
-  'React Component': `// React Component Template
-import React from 'react';
-
-interface Props {
-  // Define your props here
-}
-
-export default function ComponentName({ }: Props) {
+export default function Component() {
   return (
     <div>
-      {/* Your JSX here */}
+      <h1>Hello World</h1>
     </div>
   );
+}`,
+  nextjs: `export default function Page() {
+  return (
+    <div>
+      <h1>Next.js Page</h1>
+    </div>
+  );
+}`,
+  typescript: `interface Props {
+  name: string;
+}
+
+export function greet({ name }: Props): string {
+  return \`Hello, \${name}!\`;
 }`
 };
 
-export default function CodeGenerator() {
-  const [selectedLang, setSelectedLang] = useState(languages[0]);
-  const [code, setCode] = useState(templates[languages[0]]);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-  };
+export default function CodeGeneratorPage() {
+  const [selectedTemplate, setSelectedTemplate] = useState('react');
+  const [generatedCode, setGeneratedCode] = useState(templates.react);
 
   return (
-    <div className="min-h-screen p-8 pb-20 sm:p-20">
-      <main className="max-w-7xl mx-auto">
-        {/* Back Button */}
-        <Link
-          href="/tools"
-          className="inline-flex items-center text-[#442781] hover:text-[#61459C] mb-8 group"
-        >
-          <svg
-            className="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+    <ToolPageTemplate
+      title="Code Generator"
+      description="Generate boilerplate code for various frameworks and languages"
+    >
+      <div className="space-y-6">
+        {/* Template Selection */}
+        <div className="flex gap-4">
+          {Object.keys(templates).map((template) => (
+            <Button
+              key={template}
+              variant={selectedTemplate === template ? 'primary' : 'secondary'}
+              onClick={() => {
+                setSelectedTemplate(template);
+                setGeneratedCode(templates[template as keyof typeof templates]);
+              }}
+            >
+              {template.toUpperCase()}
+            </Button>
+          ))}
+        </div>
+
+        {/* Generated Code */}
+        <div>
+          <pre className="w-full p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-x-auto">
+            <code className="text-gray-800 dark:text-gray-200">
+              {generatedCode}
+            </code>
+          </pre>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-4">
+          <Button
+            variant="primary"
+            onClick={() => navigator.clipboard.writeText(generatedCode)}
+            icon={<Icon type="external" />}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          <span className="font-rubik">Back to Tools</span>
-        </Link>
-
-        <div className="mb-8">
-          <h1 className="font-raleway font-bold text-3xl text-gray-800 mb-4">
-            Code Generator
-          </h1>
-          <p className="font-rubik text-gray-600">
-            Generate boilerplate code for various programming languages.
-          </p>
+            Copy to Clipboard
+          </Button>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="font-raleway font-semibold text-lg mb-4">Settings</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block font-rubik text-sm text-gray-600 mb-2">
-                    Language
-                  </label>
-                  <select
-                    value={selectedLang}
-                    onChange={(e) => {
-                      setSelectedLang(e.target.value);
-                      setCode(templates[e.target.value]);
-                    }}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#442781] font-rubik text-sm"
-                  >
-                    {languages.map((lang) => (
-                      <option key={lang} value={lang}>
-                        {lang}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="font-raleway font-semibold text-lg">Generated Code</h2>
-                <button
-                  onClick={handleCopy}
-                  className="px-4 py-2 bg-[#442781] text-white rounded-lg font-rubik text-sm hover:bg-[#61459C] transition-colors"
-                >
-                  Copy Code
-                </button>
-              </div>
-              <div className="relative">
-                <pre className="p-4 bg-gray-50 rounded-lg overflow-x-auto font-mono text-sm">
-                  <code>{code}</code>
-                </pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </ToolPageTemplate>
   );
 } 
