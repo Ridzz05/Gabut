@@ -27,6 +27,7 @@ export default function FormatConverterPage() {
     to: 'yaml'
   });
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleConvert = () => {
     try {
@@ -82,6 +83,8 @@ export default function FormatConverterPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -91,86 +94,111 @@ export default function FormatConverterPage() {
     >
       <div className="space-y-6">
         {/* Format Selection */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* From Format */}
+          <div className="space-y-2">
             <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
               From:
             </label>
-            <select
-              value={conversion.from}
-              onChange={(e) => setConversion(prev => ({ ...prev, from: e.target.value as FormatType }))}
-              className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg capitalize"
-            >
-              {formatOptions.map(format => (
-                <option key={format} value={format} className="capitalize">
-                  {format.toUpperCase()}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={conversion.from}
+                onChange={(e) => setConversion(prev => ({ ...prev, from: e.target.value as FormatType }))}
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent capitalize appearance-none"
+              >
+                {formatOptions.map(format => (
+                  <option key={format} value={format} className="capitalize">
+                    {format.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <Icon type="chevron-down" className="w-4 h-4 text-gray-500" />
+              </div>
+            </div>
           </div>
 
-          {/* Swap Button */}
-          <div className="flex items-end justify-center">
-            <Button
-              variant="secondary"
-              onClick={() => setConversion(prev => ({ from: prev.to, to: prev.from }))}
-              className="px-3"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-              </svg>
-            </Button>
-          </div>
-
-          <div className="flex-1 space-y-2">
+          {/* To Format */}
+          <div className="space-y-2">
             <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
               To:
             </label>
-            <select
-              value={conversion.to}
-              onChange={(e) => setConversion(prev => ({ ...prev, to: e.target.value as FormatType }))}
-              className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg capitalize"
-            >
-              {formatOptions.map(format => (
-                <option key={format} value={format} className="capitalize">
-                  {format.toUpperCase()}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={conversion.to}
+                onChange={(e) => setConversion(prev => ({ ...prev, to: e.target.value as FormatType }))}
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent capitalize appearance-none"
+              >
+                {formatOptions.map(format => (
+                  <option key={format} value={format} className="capitalize">
+                    {format.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <Icon type="chevron-down" className="w-4 h-4 text-gray-500" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Input */}
-        <div className="space-y-2">
-          <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
-            Input:
-          </label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={`Enter your ${conversion.from.toUpperCase()} here...`}
-            className="w-full h-64 p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
-          />
+        {/* Input/Output Container */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Input */}
+          <div className="space-y-2">
+            <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
+              Input:
+            </label>
+            <div className="relative">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={`Enter your ${conversion.from.toUpperCase()} here...`}
+                className="w-full h-[300px] p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent resize-none"
+              />
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setInput('')}
+                className="absolute top-2 right-2"
+                icon={<Icon type="trash" className="w-4 h-4" />}
+              >
+                Clear
+              </Button>
+            </div>
+          </div>
+
+          {/* Output */}
+          <div className="space-y-2">
+            <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
+              Output:
+            </label>
+            <div className="relative">
+              <pre className="w-full h-[300px] p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-auto whitespace-pre-wrap break-words">
+                {output}
+              </pre>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => copyToClipboard(output)}
+                className="absolute top-2 right-2"
+                icon={<Icon type="external" className="w-4 h-4" />}
+              >
+                {copied ? 'Copied!' : 'Copy'}
+              </Button>
+            </div>
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-4">
+        {/* Convert Button */}
+        <div className="flex justify-center">
           <Button
             variant="primary"
             onClick={handleConvert}
-            icon={<Icon type="play" />}
+            icon={<Icon type="play" className="w-4 h-4" />}
+            className="w-full sm:w-auto min-w-[200px]"
           >
             Convert
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setInput('');
-              setOutput('');
-              setError(null);
-            }}
-          >
-            Clear
           </Button>
         </div>
 
@@ -183,27 +211,24 @@ export default function FormatConverterPage() {
           </div>
         )}
 
-        {/* Output */}
-        {output && !error && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
-                Output:
-              </label>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => copyToClipboard(output)}
-                icon={<Icon type="external" />}
+        {/* Format Info */}
+        <div className="p-4 bg-[#442781]/5 dark:bg-[#442781]/10 rounded-lg">
+          <h3 className="font-raleway font-semibold text-gray-800 dark:text-white mb-2">
+            Supported Formats
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+            {formatOptions.map((format) => (
+              <div
+                key={format}
+                className="px-3 py-2 bg-white dark:bg-gray-800 rounded-lg text-center"
               >
-                Copy
-              </Button>
-            </div>
-            <pre className="w-full h-64 p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-auto">
-              {output}
-            </pre>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+                  {format}
+                </span>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </ToolPageTemplate>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRadioPlayer } from '../../hooks/useRadioPlayer';
@@ -10,11 +10,11 @@ import MediaPlayer from '../../components/MediaPlayer';
 const radioStations: RadioStation[] = [
   {
     radioId: '1',
-    name: 'Radio Example 1',
-    frequency: '98.7 FM',
+    name: 'Prambors Radio',
+    frequency: '102.2 FM',
     location: 'Jakarta',
-    logo: 'https://via.placeholder.com/100',
-    streamUrl: 'https://example.com/stream1',
+    logo: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400&auto=format&fit=crop&q=60',
+    streamUrl: 'https://stream.radiojar.com/4ywdgup3bnzuv',
     description: 'Jakarta\'s #1 Hit Music Station',
     category: 'Pop',
     genres: ['Pop', 'Top 40'],
@@ -24,40 +24,89 @@ const radioStations: RadioStation[] = [
   },
   {
     radioId: '2',
-    name: 'Radio Example 2',
-    frequency: '101.3 FM',
-    location: 'Bandung',
-    logo: 'https://via.placeholder.com/100',
-    streamUrl: 'https://example.com/stream2',
-    description: 'Best Jazz in Town',
-    category: 'Jazz',
-    genres: ['Jazz', 'Blues'],
+    name: 'Hard Rock FM',
+    frequency: '87.6 FM',
+    location: 'Jakarta',
+    logo: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400&auto=format&fit=crop&q=60',
+    streamUrl: 'https://stream.radiojar.com/fnex9bkswk8uv',
+    description: 'Indonesia\'s Best Rock Station',
+    category: 'Rock',
+    genres: ['Rock', 'Alternative'],
+    currentTrack: null,
+    listeners: null,
+    like: null
+  },
+  {
+    radioId: '3',
+    name: 'Jak FM',
+    frequency: '101.0 FM',
+    location: 'Jakarta',
+    logo: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400&auto=format&fit=crop&q=60',
+    streamUrl: 'https://stream.radiojar.com/u8b5f5k8pg5tv',
+    description: 'Jakarta\'s Best Music',
+    category: 'Pop',
+    genres: ['Pop', 'Jazz'],
+    currentTrack: null,
+    listeners: null,
+    like: null
+  },
+  {
+    radioId: '4',
+    name: 'I-Radio',
+    frequency: '89.6 FM',
+    location: 'Jakarta',
+    logo: 'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400&auto=format&fit=crop&q=60',
+    streamUrl: 'https://stream.radiojar.com/4ywdgup3bnzuv',
+    description: '100% Musik Indonesia',
+    category: 'Pop',
+    genres: ['Pop Indonesia'],
+    currentTrack: null,
+    listeners: null,
+    like: null
+  },
+  {
+    radioId: '5',
+    name: 'Delta FM',
+    frequency: '99.1 FM',
+    location: 'Jakarta',
+    logo: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=60',
+    streamUrl: 'https://stream.radiojar.com/4ywdgup3bnzuv',
+    description: 'Musik Hits Terbaik',
+    category: 'Pop',
+    genres: ['Pop', 'Dangdut'],
     currentTrack: null,
     listeners: null,
     like: null
   }
-  // ... tambahkan radio station lainnya
 ];
 
-const categories = ['Semua', 'Pop', 'Rock', 'Jazz', 'Dangdut'];
+const categories = ['Semua', 'Pop', 'Rock', 'Jazz', 'Dangdut', 'News'];
+
+const StationImage = memo(({ src, alt }: { src: string; alt: string }) => {
+  const [imgSrc, setImgSrc] = useState(src);
+  
+  return (
+    <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 relative">
+      <Image
+        src={imgSrc}
+        alt={alt}
+        fill
+        className="object-cover"
+        onError={() => setImgSrc('https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?w=400&auto=format&fit=crop&q=60')}
+      />
+    </div>
+  );
+});
+
+StationImage.displayName = 'StationImage';
 
 export default function RadioPage() {
-  const {
-    currentStation,
-    isPlaying,
-    volume,
-    isMuted,
-    handlePlay,
-    handleStationChange,
-    handleVolumeChange,
-    toggleMute
-  } = useRadioPlayer();
-
   const [selectedCategory, setSelectedCategory] = useState('Semua');
+  const { currentStation, isPlaying, volume, isMuted, handlePlay, handleStationChange, handleVolumeChange, toggleMute } = useRadioPlayer();
 
   const filteredStations = selectedCategory === 'Semua'
     ? radioStations
-    : radioStations.filter(station => station.category === selectedCategory);
+    : radioStations.filter(station => station.genres.includes(selectedCategory));
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
@@ -80,7 +129,7 @@ export default function RadioPage() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          <span className="font-rubik">Kembali ke Playground</span>
+          Kembali
         </Link>
 
         {/* Media Player */}
@@ -97,59 +146,58 @@ export default function RadioPage() {
         </div>
 
         {/* Category Filter */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors flex-shrink-0 ${
-                selectedCategory === category
-                  ? 'bg-[#442781] text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="mb-8 overflow-x-auto">
+          <div className="flex gap-2 min-w-max pb-4">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors flex-shrink-0 ${
+                  selectedCategory === category
+                    ? 'bg-[#442781] text-white'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Station List */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredStations.map((station) => (
-            <button
-              key={station.radioId}
-              onClick={() => handleStationChange(station)}
-              className={`p-4 rounded-xl border transition-all ${
-                currentStation?.radioId === station.radioId
-                  ? 'border-[#442781] dark:border-[#61459C] bg-[#442781]/5 dark:bg-[#61459C]/5'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-[#442781] dark:hover:border-[#61459C]'
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 relative flex-shrink-0">
-                  <div className="absolute inset-0 rounded-full overflow-hidden">
-                    <Image
-                      src={station.logo}
-                      alt={station.name}
-                      fill
-                      className="object-cover"
-                    />
+          {filteredStations.map((station) => {
+            const isActive = currentStation?.radioId === station.radioId;
+            return (
+              <button
+                key={station.radioId}
+                onClick={() => handleStationChange(station)}
+                className={`p-4 rounded-xl border transition-all ${
+                  isActive
+                    ? 'border-[#442781] dark:border-[#61459C] bg-[#442781]/5 dark:bg-[#61459C]/5'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-[#442781] dark:hover:border-[#61459C]'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <StationImage 
+                    src={station.logo} 
+                    alt={station.name} 
+                  />
+                  <div className="flex-1 text-left min-w-0">
+                    <h3 className="font-raleway font-semibold text-gray-800 dark:text-white mb-1 truncate">
+                      {station.name}
+                    </h3>
+                    <p className="font-rubik text-sm text-gray-600 dark:text-gray-400 truncate">
+                      {station.frequency}
+                    </p>
+                    <p className="font-rubik text-sm text-[#442781] dark:text-[#a992db] truncate">
+                      {station.location}
+                    </p>
                   </div>
                 </div>
-                <div className="flex-1 text-left min-w-0">
-                  <h3 className="font-raleway font-semibold text-gray-800 dark:text-white mb-1 truncate">
-                    {station.name}
-                  </h3>
-                  <p className="font-rubik text-sm text-gray-600 dark:text-gray-400 truncate">
-                    {station.frequency}
-                  </p>
-                  <p className="font-rubik text-sm text-[#442781] dark:text-[#a992db] truncate">
-                    {station.location}
-                  </p>
-                </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       </main>
     </div>

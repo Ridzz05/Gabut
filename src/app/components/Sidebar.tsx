@@ -26,7 +26,7 @@ export default function Sidebar() {
       {/* Backdrop dengan lazy loading */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm z-40 sm:hidden"
+          className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-[2px] z-40 sm:hidden transform-gpu"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
@@ -38,7 +38,8 @@ export default function Sidebar() {
           fixed top-0 left-0 z-40 h-screen w-64 pt-16
           bg-white/80 dark:bg-gray-900/80 backdrop-blur-md
           border-r border-gray-100 dark:border-gray-800/50
-          transition-transform duration-300 ease-in-out
+          transition-transform duration-200 ease-out
+          will-change-transform
           ${isOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'}
         `}
         aria-label="Sidebar Navigation"
@@ -72,36 +73,6 @@ export default function Sidebar() {
               ))}
             </div>
           </nav>
-
-          {/* Storage Section dengan aria-label */}
-          <div className="p-4">
-            <div 
-              className="p-4 rounded-lg bg-white/50 dark:bg-gray-800/50"
-              aria-label="Storage Information"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-raleway text-sm font-medium text-gray-800 dark:text-white">
-                  Storage
-                </h3>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  75%
-                </span>
-              </div>
-              <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-[#442781] dark:bg-[#61459C] rounded-full"
-                  style={{ width: '75%' }}
-                  role="progressbar"
-                  aria-valuenow={75}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                />
-              </div>
-              <p className="font-rubik text-xs text-gray-500 dark:text-gray-400 mt-2">
-                7.5 GB of 10 GB used
-              </p>
-            </div>
-          </div>
         </div>
       </aside>
     </>

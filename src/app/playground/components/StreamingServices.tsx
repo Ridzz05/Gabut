@@ -4,32 +4,28 @@ import { motion } from 'framer-motion';
 import Card from '../../components/Card';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
-import Image from 'next/image';
 
 const services = [
   {
     title: "Live TV",
     description: "Watch your favorite TV channels live",
-    icon: "📺",
-    image: "/images/playground/tv.jpg",
+    emoji: "📺",
     link: "/playground/tv",
     status: "Available"
   },
   {
     title: "Radio",
     description: "Listen to worldwide radio stations",
-    icon: "📻",
-    image: "/images/playground/radio.jpg",
+    emoji: "📻",
     link: "/playground/radio",
     status: "Available"
   },
   {
-    title: "Movies",
-    description: "Stream the latest movies and shows",
-    icon: "🎬",
-    image: "/images/playground/movies.jpg",
-    link: "/playground/movies",
-    status: "Coming Soon"
+    title: "Music",
+    description: "Stream the latest music and shows",
+    emoji: "🎵",
+    link: "/playground/music",
+    status: "Available"
   }
 ];
 
@@ -70,16 +66,8 @@ export function StreamingServices() {
           variants={cardVariants}
         >
           <Card className="group hover:shadow-lg transition-all">
-            <div className="relative h-48 mb-6 rounded-lg overflow-hidden">
-              <Image
-                src={service.image}
-                alt={service.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-4xl">
-                {service.icon}
-              </div>
+            <div className="relative h-48 mb-6 rounded-lg overflow-hidden bg-gradient-to-br from-[#442781]/10 to-[#61459C]/10 dark:from-[#442781]/20 dark:to-[#61459C]/20 flex items-center justify-center">
+              <span className="text-7xl">{service.emoji}</span>
             </div>
             <h2 className="font-raleway font-bold text-xl text-gray-800 dark:text-white mb-2">
               {service.title}

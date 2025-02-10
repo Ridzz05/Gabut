@@ -9,14 +9,14 @@ import Icon from './Icon';
 const highlights = [
   {
     title: "JSON Validator",
-    description: "Validate and format your JSON data with ease",
-    image: "/images/tools/json-validator.jpg",
+    description: "Validasi dan format data JSON Anda dengan mudah",
+    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=60", // Code editor image
     link: "/tools/json"
   },
   {
     title: "Live TV Streaming",
-    description: "Watch your favorite channels live",
-    image: "/images/playground/tv-streaming.jpg",
+    description: "Tonton channel favorit Anda secara langsung",
+    image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&auto=format&fit=crop&q=60", // TV/Streaming image
     link: "/playground/tv"
   }
 ];
@@ -65,6 +65,7 @@ export function HomeHighlights() {
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             </div>
             <h3 className="font-raleway font-bold text-xl text-gray-800 dark:text-white mb-4">
               {highlight.title}
@@ -78,7 +79,7 @@ export function HomeHighlights() {
               icon={<Icon type="arrow-right" />}
               className="w-full justify-center"
             >
-              Try Now
+              Coba Sekarang
             </Button>
           </Card>
         </motion.div>

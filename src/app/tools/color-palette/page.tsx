@@ -59,6 +59,7 @@ export default function ColorPalettePage() {
   const [baseColor, setBaseColor] = useState('#442781');
   const [paletteType, setPaletteType] = useState<Palette['type']>('monochromatic');
   const [palette, setPalette] = useState<Color[]>(generatePalette(baseColor, paletteType));
+  const [copiedColor, setCopiedColor] = useState<string | null>(null);
 
   const handleGeneratePalette = () => {
     const newPalette = generatePalette(baseColor, paletteType);
@@ -67,6 +68,8 @@ export default function ColorPalettePage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    setCopiedColor(text);
+    setTimeout(() => setCopiedColor(null), 2000);
   };
 
   return (
@@ -76,34 +79,38 @@ export default function ColorPalettePage() {
     >
       <div className="space-y-8">
         {/* Controls */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="space-y-2">
             <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
               Base Color:
             </label>
             <div className="flex gap-4">
-              <input
-                type="color"
-                value={baseColor}
-                onChange={(e) => setBaseColor(e.target.value)}
-                className="h-10 w-20 rounded border border-gray-200 dark:border-gray-700"
-              />
+              <div className="relative group">
+                <input
+                  type="color"
+                  value={baseColor}
+                  onChange={(e) => setBaseColor(e.target.value)}
+                  className="h-10 w-20 cursor-pointer rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                />
+                <div className="absolute inset-0 rounded border-2 border-transparent group-hover:border-[#442781] dark:group-hover:border-[#61459C] transition-colors pointer-events-none" />
+              </div>
               <input
                 type="text"
                 value={baseColor}
                 onChange={(e) => setBaseColor(e.target.value)}
-                className="flex-1 px-4 py-2 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
+                className="flex-1 px-4 py-2 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent"
               />
             </div>
           </div>
-          <div className="flex-1 space-y-2">
+
+          <div className="space-y-2">
             <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
               Palette Type:
             </label>
             <select
               value={paletteType}
               onChange={(e) => setPaletteType(e.target.value as Palette['type'])}
-              className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
+              className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent"
             >
               <option value="monochromatic">Monochromatic</option>
               <option value="analogous">Analogous</option>
@@ -119,6 +126,7 @@ export default function ColorPalettePage() {
           variant="primary"
           onClick={handleGeneratePalette}
           icon={<Icon type="play" />}
+          className="w-full sm:w-auto"
         >
           Generate Palette
         </Button>
@@ -128,46 +136,47 @@ export default function ColorPalettePage() {
           {palette.map((color) => (
             <div
               key={color.hex}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow"
             >
               <div
-                className="h-32 w-full"
+                className="h-32 w-full transition-transform group-hover:scale-105 duration-300"
                 style={{ backgroundColor: color.hex }}
               />
-              <div className="p-4 bg-white dark:bg-gray-800">
+              <div className="p-4">
                 <h3 className="font-raleway font-semibold text-gray-800 dark:text-white mb-2">
                   {color.name}
                 </h3>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <button
                     onClick={() => copyToClipboard(color.hex)}
-                    className="w-full text-left px-2 py-1 font-mono text-sm bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
+                    className="w-full text-left px-3 py-2 font-mono text-sm bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors relative overflow-hidden group/button"
                   >
                     {color.hex}
+                    <span className={`absolute inset-0 flex items-center justify-center bg-[#442781] text-white text-xs font-rubik transition-transform duration-200 ${
+                      copiedColor === color.hex ? 'translate-y-0' : 'translate-y-full'
+                    }`}>
+                      Copied!
+                    </span>
                   </button>
                   <button
                     onClick={() => copyToClipboard(color.rgb)}
-                    className="w-full text-left px-2 py-1 font-mono text-sm bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
+                    className="w-full text-left px-3 py-2 font-mono text-sm bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors relative overflow-hidden group/button"
                   >
                     {color.rgb}
+                    <span className={`absolute inset-0 flex items-center justify-center bg-[#442781] text-white text-xs font-rubik transition-transform duration-200 ${
+                      copiedColor === color.rgb ? 'translate-y-0' : 'translate-y-full'
+                    }`}>
+                      Copied!
+                    </span>
                   </button>
                 </div>
-              </div>
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => copyToClipboard(color.hex)}
-                >
-                  Copy Color
-                </Button>
               </div>
             </div>
           ))}
         </div>
 
         {/* Export Options */}
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <Button
             variant="outline"
             onClick={() => {
@@ -176,6 +185,7 @@ export default function ColorPalettePage() {
                 .join('\n');
               copyToClipboard(text);
             }}
+            className="flex-1 sm:flex-none justify-center"
           >
             Copy All Colors
           </Button>
@@ -187,6 +197,7 @@ export default function ColorPalettePage() {
                 .join('\n');
               copyToClipboard(css);
             }}
+            className="flex-1 sm:flex-none justify-center"
           >
             Export as CSS Variables
           </Button>

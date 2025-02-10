@@ -36,6 +36,7 @@ export default function RegexTesterPage() {
   const [error, setError] = useState<string | null>(null);
   const [replacementText, setReplacementText] = useState('');
   const [replacementResult, setReplacementResult] = useState('');
+  const [copied, setCopied] = useState<string | null>(null);
 
   const handleTest = useCallback(() => {
     try {
@@ -105,8 +106,10 @@ export default function RegexTesterPage() {
     handleTest();
   }, [handleTest]);
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
+    setCopied(type);
+    setTimeout(() => setCopied(null), 2000);
   };
 
   return (
@@ -120,39 +123,48 @@ export default function RegexTesterPage() {
           <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
             Regular Expression:
           </label>
-          <div className="flex gap-4">
-            <input
-              type="text"
-              value={pattern}
-              onChange={(e) => setPattern(e.target.value)}
-              placeholder="Enter regex pattern..."
-              className="flex-1 px-4 py-2 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
-            />
-            <Button
-              variant="secondary"
-              onClick={() => copyToClipboard(pattern)}
-              icon={<Icon type="external" />}
-            >
-              Copy
-            </Button>
+          <div className="flex flex-wrap gap-4">
+            <div className="relative flex-1 min-w-[200px]">
+              <input
+                type="text"
+                value={pattern}
+                onChange={(e) => setPattern(e.target.value)}
+                placeholder="Enter regex pattern..."
+                className="w-full px-4 py-2 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent"
+              />
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => copyToClipboard(pattern, 'pattern')}
+                className="absolute right-2 top-1/2 -translate-y-1/2"
+                icon={<Icon type="external" className="w-4 h-4" />}
+              >
+                {copied === 'pattern' ? 'Copied!' : 'Copy'}
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Flags */}
-        <div className="flex flex-wrap gap-4">
-          {Object.entries(flags).map(([key, value]) => (
-            <label key={key} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={value}
-                onChange={() => setFlags(prev => ({ ...prev, [key]: !prev[key] }))}
-                className="w-4 h-4 text-[#442781] dark:text-[#61459C] rounded border-gray-300 dark:border-gray-600"
-              />
-              <span className="font-rubik text-sm text-gray-700 dark:text-gray-300 capitalize">
-                {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
-              </span>
-            </label>
-          ))}
+        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <h3 className="font-raleway font-semibold text-gray-800 dark:text-white mb-4">
+            Regex Flags
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {Object.entries(flags).map(([key, value]) => (
+              <label key={key} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={value}
+                  onChange={() => setFlags(prev => ({ ...prev, [key]: !prev[key] }))}
+                  className="w-4 h-4 text-[#442781] dark:text-[#61459C] rounded border-gray-300 dark:border-gray-600 focus:ring-[#442781] dark:focus:ring-[#61459C]"
+                />
+                <span className="font-rubik text-sm text-gray-700 dark:text-gray-300 capitalize group-hover:text-[#442781] dark:group-hover:text-[#61459C] transition-colors">
+                  {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                </span>
+              </label>
+            ))}
+          </div>
         </div>
 
         {/* Test String */}
@@ -160,12 +172,23 @@ export default function RegexTesterPage() {
           <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
             Test String:
           </label>
-          <textarea
-            value={testString}
-            onChange={(e) => setTestString(e.target.value)}
-            placeholder="Enter text to test against..."
-            className="w-full h-32 p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
-          />
+          <div className="relative">
+            <textarea
+              value={testString}
+              onChange={(e) => setTestString(e.target.value)}
+              placeholder="Enter text to test against..."
+              className="w-full h-[200px] p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent resize-none"
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setTestString('')}
+              className="absolute top-2 right-2"
+              icon={<Icon type="trash" className="w-4 h-4" />}
+            >
+              Clear
+            </Button>
+          </div>
         </div>
 
         {/* Replacement */}
@@ -173,13 +196,24 @@ export default function RegexTesterPage() {
           <label className="block font-rubik text-sm text-gray-700 dark:text-gray-300">
             Replacement Text (optional):
           </label>
-          <input
-            type="text"
-            value={replacementText}
-            onChange={(e) => setReplacementText(e.target.value)}
-            placeholder="Enter replacement text..."
-            className="w-full px-4 py-2 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={replacementText}
+              onChange={(e) => setReplacementText(e.target.value)}
+              placeholder="Enter replacement text..."
+              className="w-full px-4 py-2 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#442781] dark:focus:ring-[#61459C] focus:border-transparent"
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setReplacementText('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2"
+              icon={<Icon type="trash" className="w-4 h-4" />}
+            >
+              Clear
+            </Button>
+          </div>
         </div>
 
         {/* Error Message */}
@@ -202,7 +236,7 @@ export default function RegexTesterPage() {
                 </h3>
               </div>
               {matches.length > 0 ? (
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {matches.map((match, index) => (
                     <div
                       key={index}
@@ -215,10 +249,10 @@ export default function RegexTesterPage() {
                         <Button
                           variant="secondary"
                           size="sm"
-                          onClick={() => copyToClipboard(match.text)}
-                          icon={<Icon type="external" />}
+                          onClick={() => copyToClipboard(match.text, `match-${index}`)}
+                          icon={<Icon type="external" className="w-4 h-4" />}
                         >
-                          Copy
+                          {copied === `match-${index}` ? 'Copied!' : 'Copy'}
                         </Button>
                       </div>
                       <pre className="font-mono text-sm bg-white dark:bg-gray-900 p-2 rounded">
@@ -259,10 +293,10 @@ export default function RegexTesterPage() {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => copyToClipboard(replacementResult)}
-                    icon={<Icon type="external" />}
+                    onClick={() => copyToClipboard(replacementResult, 'replacement')}
+                    icon={<Icon type="external" className="w-4 h-4" />}
                   >
-                    Copy
+                    {copied === 'replacement' ? 'Copied!' : 'Copy'}
                   </Button>
                 </div>
                 <pre className="w-full p-4 font-mono text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-auto">
