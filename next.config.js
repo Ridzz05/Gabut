@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['cdn.onlineradiobox.com'],
+    domains: ['images.unsplash.com', 'cdn.onlineradiobox.com'],
     unoptimized: true,
     remotePatterns: [
       {

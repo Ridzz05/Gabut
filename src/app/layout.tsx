@@ -39,13 +39,26 @@ export default function RootLayout({
         font-sans antialiased 
         bg-white dark:bg-gray-900 
         text-gray-800 dark:text-white
+        relative
       `}>
+        {/* Modern Pattern Background */}
+        <div className="fixed inset-0 pointer-events-none">
+          {/* Top-left pattern */}
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#442781]/5 dark:bg-[#442781]/10 rounded-full blur-3xl" />
+          
+          {/* Bottom-right pattern */}
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#61459C]/5 dark:bg-[#61459C]/10 rounded-full blur-3xl" />
+          
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] dark:bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)]" />
+        </div>
+
         <ThemeProvider>
           <SidebarProvider>
             <Navbar />
             <div className="flex">
               <Sidebar />
-              <main className="flex-1 sm:ml-64 pt-16 min-h-screen">
+              <main className="flex-1 sm:ml-64 pt-16 min-h-screen relative">
                 {children}
               </main>
             </div>
